@@ -12,7 +12,7 @@ class LagrangePolynomial:
         self.fx2 = [0 for i in range(n)]
         self.a1 = [0 for i in range(n)]
         self.a2 = [0 for i in range(n)]
-    def load_data(self,x1,x2):
+    def load_population_data(self,x1,x2):
         for i in range(self.n):
             # Stores the years as the x values
             self.x[self.n - 1 - i] = x1[i][0]
@@ -52,30 +52,16 @@ class LagrangePolynomial:
         diff = val_1 - val_2
         der = der_1 - der_2    
         return val_1,val_2
+    def bisection(self):
+        pass
+    def newton(self):
+        pass
 #China population data    
 x1 = [(2000,1.28),(2005,1.31),(2010,1.35),(2015,1.39),(2023,1.41)]
 #India population data
 x2 = [(2000,1.04),(2005,1.1),(2010,1.2),(2015,1.32),(2023,1.40)]    
 test = LagrangePolynomial(5)
-test.load_data(x1,x2)    
+test.load_population_data(x1,x2)    
 test.generate_polynomial()
-china_arr = []
-india_arr = []
-x_arr = []
-i = 2020
-minimum=1000
-while i <= 2023:
-    val_1,val_2 = test.evaluate_polynomial(i)
-    minimum = min(minimum,val_1 - val_2)
-    china_arr.append(val_1)
-    india_arr.append(val_2)
-    x_arr.append(i)
-    i += 0.001
-print(minimum)    
-plt.plot(x_arr,china_arr)
-plt.plot(x_arr,india_arr)
-plt.show()                    
 
-                    
-            
             
