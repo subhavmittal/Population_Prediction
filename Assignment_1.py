@@ -52,7 +52,7 @@ class LagrangePolynomial:
         val_2 = val_2*(y - self.x[self.n-1]) + self.a2[self.n - 1]
         diff = val_1 - val_2
         der = der_1 - der_2    
-        return val_1,val_2
+        return diff,der
     def bisection(a,b,f,tol=1e-5):
         FA = f(a)
         numsteps = 0
@@ -69,8 +69,22 @@ class LagrangePolynomial:
                 a = c
                 FA = F
         return c,numsteps        
-    def newton(self):
-        pass
+    def newton(p0,f_pol,f_der,maxiter,tol=1e-5):
+        i = 0
+        while i<maxiter:
+            pol = f_pol(p0)
+            der = f_der(p0)
+            try:
+                p = p0 - pol/der
+            except:
+                print("Division by zero") 
+            if(abs(p-p0) <= tol):
+                return p,i+1
+            p0 = p
+            i += 1
+        if(i == maxiter):
+            print("Method failed after",maxiter,"steps")
+            return -1,-1
 #China population data    
 x1 = [(2000,1.28),(2005,1.31),(2010,1.35),(2015,1.39),(2023,1.41)]
 #India population data
