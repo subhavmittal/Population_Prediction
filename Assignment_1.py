@@ -4,6 +4,7 @@
 # We don't use neville's method to evaluate polynomials as it takes O(n^2) time 
 # Whereas horner's method takes O(n) time
 import matplotlib.pyplot as plt
+import math
 class LagrangePolynomial:
     def __init__(self,n):
         self.n = n
@@ -52,8 +53,22 @@ class LagrangePolynomial:
         diff = val_1 - val_2
         der = der_1 - der_2    
         return val_1,val_2
-    def bisection(self):
-        pass
+    def bisection(a,b,f,tol=1e-5):
+        FA = f(a)
+        numsteps = 0
+        N0 = math.ceil(math.log((b-a)/tol,2))
+        for i in range(N0):
+            c = a + (b-a)/2
+            F = f(c)
+            numsteps += 1
+            if F == 0:
+                return c,numsteps
+            elif FA*F < 0:
+                b = c
+            else:
+                a = c
+                FA = F
+        return c,numsteps        
     def newton(self):
         pass
 #China population data    
