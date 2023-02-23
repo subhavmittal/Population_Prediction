@@ -85,6 +85,20 @@ class LagrangePolynomial:
         if(i == maxiter):
             print("Method failed after",maxiter,"steps")
             return -1,-1
+    def polynomial_root(self):
+        a = self.x[0] + 10
+        b = self.x[self.n-1]
+        f = self.evaluate_polynomial[0]
+        p0,numsteps = LagrangePolynomial.bisection(a,b,f,0.5)
+        print("Initial approximation for the root of the population difference is",p0)
+        print("The number of steps taken to find the root is",numsteps)
+        maxiter = 10
+        p,numsteps = LagrangePolynomial.newton(p0,self.evaluate_polynomial[0],self.evaluate_polynomial[1],maxiter,1e-6)
+        if(p == -1):
+            print("It seems that the root does not exist")
+        else:    
+            print("The year in which the population of India crosses China is",p)
+            print("The number of steps taken to find the root is",numsteps)            
 #China population data    
 x1 = [(2000,1.28),(2005,1.31),(2010,1.35),(2015,1.39),(2023,1.41)]
 #India population data
@@ -92,5 +106,6 @@ x2 = [(2000,1.04),(2005,1.1),(2010,1.2),(2015,1.32),(2023,1.40)]
 test = LagrangePolynomial(5)
 test.load_population_data(x1,x2)    
 test.generate_polynomial()
+
 
             
