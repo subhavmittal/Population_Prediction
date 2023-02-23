@@ -5,6 +5,8 @@
 # Whereas horner's method takes O(n) time
 import matplotlib.pyplot as plt
 import math
+def f(x):
+    return x**3 - 2*x - 5
 class LagrangePolynomial:
     def __init__(self,n):
         self.n = n
@@ -56,7 +58,7 @@ class LagrangePolynomial:
     def bisection(a,b,f,tol=1e-5):
         FA = f(a)
         numsteps = 0
-        N0 = math.ceil(math.log((b-a)/tol,2))
+        N0 = math.ceil(math.log(abs((b-a))/tol,2))
         for i in range(N0):
             c = a + (b-a)/2
             F = f(c)
