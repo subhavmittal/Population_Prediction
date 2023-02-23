@@ -88,14 +88,18 @@ class LagrangePolynomial:
             print("Method failed after",maxiter,"steps")
             return -1,-1
     def polynomial_root(self):
-        a = self.x[0] + 10
-        b = self.x[self.n-1]
-        f = self.evaluate_polynomial[0]
+        def f(x):
+            return self.evaluate_polynomial(x)[0]
+        def g(x):
+            return self.evaluate_polynomial(x)[1]
+        b = self.x[0] + 2
+        a = self.x[self.n-1]
         p0,numsteps = LagrangePolynomial.bisection(a,b,f,0.5)
         print("Initial approximation for the root of the population difference is",p0)
         print("The number of steps taken to find the root is",numsteps)
+        
         maxiter = 10
-        p,numsteps = LagrangePolynomial.newton(p0,self.evaluate_polynomial[0],self.evaluate_polynomial[1],maxiter,1e-6)
+        p,numsteps = LagrangePolynomial.newton(p0,f,g,maxiter,1e-6)
         if(p == -1):
             print("It seems that the root does not exist")
         else:    
@@ -113,3 +117,4 @@ print(test.evaluate_polynomial(2005)[0])
 print(test.evaluate_polynomial(2010)[0])
 print(test.evaluate_polynomial(2015)[0])
 print(test.evaluate_polynomial(2023)[0])
+test.polynomial_root()
