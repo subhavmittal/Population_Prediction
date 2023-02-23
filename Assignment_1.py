@@ -106,6 +106,8 @@ x2 = [(2000,1.04),(2005,1.1),(2010,1.2),(2015,1.32),(2023,1.40)]
 test = LagrangePolynomial(5)
 test.load_population_data(x1,x2)    
 test.generate_polynomial()
-
-
-            
+print(test.evaluate_polynomial(2000)[0])
+print(test.evaluate_polynomial(2005)[0])
+print(test.evaluate_polynomial(2010)[0])
+print(test.evaluate_polynomial(2015)[0])
+print(test.evaluate_polynomial(2023)[0])
