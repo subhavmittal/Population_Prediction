@@ -4,6 +4,38 @@
 # We don't use neville's method to evaluate polynomials as it takes O(n^2) time 
 # Whereas horner's method takes O(n) time
 import matplotlib.pyplot as plt
+import math
+def bisection(a,b,f,tol=1e-5):
+    FA = f(a)
+    numsteps = 0
+    N0 = math.ceil(math.log(abs((b-a))/tol,2))
+    for i in range(N0):
+        c = a + (b-a)/2
+        F = f(c)
+        numsteps += 1
+        if F == 0:
+            return c,numsteps
+        elif FA*F < 0:
+            b = c
+        else:
+            a = c
+            FA = F
+    return c,numsteps        
+def newton(p0,f,f_prime,maxiter,tol=1e-5):
+    i = 0
+    while i<maxiter:
+        pol = f(p0)
+        der = f_prime(p0)
+        try:
+            p = p0 - pol/der
+        except:
+            print("Division by zero") 
+        if(abs(p-p0) <= tol):
+            return p,i+1
+        p0 = p
+        i += 1
+    if(i == maxiter):
+        return -1,-1
 class LagrangePolynomial:
     def __init__(self,n):
         self.n = n
@@ -12,6 +44,8 @@ class LagrangePolynomial:
         self.fx2 = [0 for i in range(n)]
         self.a1 = [0 for i in range(n)]
         self.a2 = [0 for i in range(n)]
+        self.pol = 0
+        self.der = 0
     def load_data(self,x1,x2):
         for i in range(self.n):
             # Stores the years as the x values
@@ -20,7 +54,7 @@ class LagrangePolynomial:
             self.fx1[i] = x1[i][1]
             # Stores the population of india in billions as the y values
             self.fx2[i] = x2[i][1]
-    def generate_polynomial(self):
+    def generate_coefficients(self):
         # Initializing the divided difference tables for both china and india
         F1 = [[0 for j in range(i+1)] for i in range(self.n)]
         F2 = [[0 for j in range(i+1)] for i in range(self.n)]
@@ -37,7 +71,7 @@ class LagrangePolynomial:
         for i in range(self.n):
             self.a1[self.n - 1 - i] = F1[i][i]
             self.a2[self.n - 1 - i] = F2[i][i]
-    def evaluate_polynomial(self,y):
+    def evaluate(self,y):
         val_1 = self.a1[0]
         der_1 = val_1
         val_2 = self.a2[0]
@@ -49,33 +83,12 @@ class LagrangePolynomial:
             der_2 = der_2*(y - self.x[i+1]) + val_2
         val_1 = val_1*(y - self.x[self.n-1]) + self.a1[self.n - 1]
         val_2 = val_2*(y - self.x[self.n-1]) + self.a2[self.n - 1]
-        diff = val_1 - val_2
-        der = der_1 - der_2    
-        return val_1,val_2
-#China population data    
-x1 = [(2000,1.28),(2005,1.31),(2010,1.35),(2015,1.39),(2023,1.41)]
-#India population data
-x2 = [(2000,1.04),(2005,1.1),(2010,1.2),(2015,1.32),(2023,1.40)]    
-test = LagrangePolynomial(5)
-test.load_data(x1,x2)    
-test.generate_polynomial()
-china_arr = []
-india_arr = []
-x_arr = []
-i = 2020
-minimum=1000
-while i <= 2023:
-    val_1,val_2 = test.evaluate_polynomial(i)
-    minimum = min(minimum,val_1 - val_2)
-    china_arr.append(val_1)
-    india_arr.append(val_2)
-    x_arr.append(i)
-    i += 0.001
-print(minimum)    
-plt.plot(x_arr,china_arr)
-plt.plot(x_arr,india_arr)
-plt.show()                    
-
-                    
-            
-            
+        self.pol = val_1 - val_2
+        self.der = der_1 - der_2
+    def get_polynomial(self,y):
+        self.evaluate(y)
+        return self.pol
+    def get_derivative(self,y):
+        self.evaluate(y)
+        return self.der
+        
