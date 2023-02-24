@@ -5,8 +5,37 @@
 # Whereas horner's method takes O(n) time
 import matplotlib.pyplot as plt
 import math
-def f(x):
-    return x**3 - 2*x - 5
+def bisection(a,b,f,tol=1e-5):
+    FA = f(a)
+    numsteps = 0
+    N0 = math.ceil(math.log(abs((b-a))/tol,2))
+    for i in range(N0):
+        c = a + (b-a)/2
+        F = f(c)
+        numsteps += 1
+        if F == 0:
+            return c,numsteps
+        elif FA*F < 0:
+            b = c
+        else:
+            a = c
+            FA = F
+    return c,numsteps        
+def newton(p0,f,f_prime,maxiter,tol=1e-5):
+    i = 0
+    while i<maxiter:
+        pol = f(p0)
+        der = f_prime(p0)
+        try:
+            p = p0 - pol/der
+        except:
+            print("Division by zero") 
+        if(abs(p-p0) <= tol):
+            return p,i+1
+        p0 = p
+        i += 1
+    if(i == maxiter):
+        return -1,-1
 class LagrangePolynomial:
     def __init__(self,n):
         self.n = n
@@ -15,7 +44,9 @@ class LagrangePolynomial:
         self.fx2 = [0 for i in range(n)]
         self.a1 = [0 for i in range(n)]
         self.a2 = [0 for i in range(n)]
-    def load_population_data(self,x1,x2):
+        self.pol = 0
+        self.der = 0
+    def load_data(self,x1,x2):
         for i in range(self.n):
             # Stores the years as the x values
             self.x[self.n - 1 - i] = x1[i][0]
@@ -23,7 +54,7 @@ class LagrangePolynomial:
             self.fx1[i] = x1[i][1]
             # Stores the population of india in billions as the y values
             self.fx2[i] = x2[i][1]
-    def generate_polynomial(self):
+    def generate_coefficients(self):
         # Initializing the divided difference tables for both china and india
         F1 = [[0 for j in range(i+1)] for i in range(self.n)]
         F2 = [[0 for j in range(i+1)] for i in range(self.n)]
@@ -40,7 +71,7 @@ class LagrangePolynomial:
         for i in range(self.n):
             self.a1[self.n - 1 - i] = F1[i][i]
             self.a2[self.n - 1 - i] = F2[i][i]
-    def evaluate_polynomial(self,y):
+    def evaluate(self,y):
         val_1 = self.a1[0]
         der_1 = val_1
         val_2 = self.a2[0]
@@ -52,67 +83,12 @@ class LagrangePolynomial:
             der_2 = der_2*(y - self.x[i+1]) + val_2
         val_1 = val_1*(y - self.x[self.n-1]) + self.a1[self.n - 1]
         val_2 = val_2*(y - self.x[self.n-1]) + self.a2[self.n - 1]
-        diff = val_1 - val_2
-        der = der_1 - der_2    
-        return diff,der
-    def bisection(a,b,f,tol=1e-5):
-        FA = f(a)
-        numsteps = 0
-        N0 = math.ceil(math.log(abs((b-a))/tol,2))
-        for i in range(N0):
-            c = a + (b-a)/2
-            F = f(c)
-            numsteps += 1
-            if F == 0:
-                return c,numsteps
-            elif FA*F < 0:
-                b = c
-            else:
-                a = c
-                FA = F
-        return c,numsteps        
-    def newton(p0,f_pol,f_der,maxiter,tol=1e-5):
-        i = 0
-        while i<maxiter:
-            pol = f_pol(p0)
-            der = f_der(p0)
-            try:
-                p = p0 - pol/der
-            except:
-                print("Division by zero") 
-            if(abs(p-p0) <= tol):
-                return p,i+1
-            p0 = p
-            i += 1
-        if(i == maxiter):
-            print("Method failed after",maxiter,"steps")
-            return -1,-1
-    def polynomial_root(self,a,b):
-        def f(x):
-            return self.evaluate_polynomial(x)[0]
-        def g(x):
-            return self.evaluate_polynomial(x)[1]
-        p0,numsteps = LagrangePolynomial.bisection(a,b,f,0.5)
-        print("Initial approximation for the root of the population difference is",p0)
-        print("The number of steps taken to find the root is",numsteps)
+        self.pol = val_1 - val_2
+        self.der = der_1 - der_2
+    def get_polynomial(self,y):
+        self.evaluate(y)
+        return self.pol
+    def get_derivative(self,y):
+        self.evaluate(y)
+        return self.der
         
-        maxiter = 10
-        p,numsteps = LagrangePolynomial.newton(p0,f,g,maxiter,1e-6)
-        if(p == -1):
-            print("It seems that the root does not exist")
-        else:    
-            print("The year in which the population of India crosses China is",p)
-            print("The number of steps taken to find the root is",numsteps)            
-#China population data    
-x1 = [(2000,1.28),(2005,1.31),(2010,1.35),(2015,1.39),(2023,1.41)]
-#India population data
-x2 = [(2000,1.04),(2005,1.1),(2010,1.2),(2015,1.32),(2023,1.40)]    
-test = LagrangePolynomial(5)
-test.load_population_data(x1,x2)    
-test.generate_polynomial()
-print(test.evaluate_polynomial(2000)[0])
-print(test.evaluate_polynomial(2005)[0])
-print(test.evaluate_polynomial(2010)[0])
-print(test.evaluate_polynomial(2015)[0])
-print(test.evaluate_polynomial(2023)[0])
-test.polynomial_root(2020,2024)
