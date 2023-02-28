@@ -75,7 +75,7 @@ def bisection(a,b,LagrangePolynomial1,LagrangePolynomial2,tol=1e-5):
     FB = LagrangePolynomial1.get_polynomial() - LagrangePolynomial2.get_polynomial()
     # Checking if the root is in the interval
     if FA*FB > 0:
-        print("Function endpoints are of same sign")
+        print("Function endpoints are of same sign, bisection method cannot be used")
         return -1,-1
     # Initializing the number of steps
     numsteps = 0
